@@ -1,4 +1,6 @@
 /* CVM Professional Cyber-Dark Theme Styling */
+
+
 :root {
     /* Sophisticated Theme Palette */
     --bg-main: #06070a;
@@ -45,6 +47,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    zoom: 1;
 }
 
 body {
