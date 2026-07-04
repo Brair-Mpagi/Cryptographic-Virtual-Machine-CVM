@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVM — Cryptographic Virtual Machine IDE & Visualizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">SECURE</span>
+                <h1>CVM <span>Cryptographic VM</span></h1>
+            </div>
+            <div class="controls-area">
+                <div class="select-wrapper">
+                    <label for="template-select">Template</label>
+                    <select id="template-select">
+                        <option value="fibonacci">Fibonacci Calculator</option>
+                        <option value="factorial">Subroutine Factorial</option>
+                        <option value="crypto">Hash & Sign (SHA256 + ECDSA)</option>
+                        <option value="sandbox">Sandbox Escape (Infinite Loop)</option>
+                    </select>
+                </div>
+                <div class="input-wrapper">
+                    <label for="gas-limit-input">Gas Limit</label>
+                    <input type="number" id="gas-limit-input" value="1000" min="0">
+                </div>
+                <div class="btn-group">
+                    <button id="btn-assemble" class="btn btn-primary">Assemble</button>
+                    <button id="btn-run" class="btn btn-success" disabled>Run</button>
+                    <button id="btn-step" class="btn btn-warning" disabled>Step Into</button>
+                    <button id="btn-reset" class="btn btn-danger">Reset</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Panel: Assembly Code Editor -->
+            <section class="panel panel-editor">
+                <div class="panel-header">
+                    <h2>Assembly Editor</h2>
+                    <span class="file-name">program.cvmasm</span>
+                </div>
+                <div class="editor-container">
+                    <div class="line-numbers" id="line-numbers"></div>
+                    <textarea id="code-editor" spellcheck="false" placeholder="Write CVM assembly here..."></textarea>
+                </div>
+            </section>
+
+            <!-- Middle Panel: Bytecode & Output Console -->
+            <section class="panel panel-console">
+                <div class="sub-panel bytecode-panel">
+                    <div class="panel-header">
+                        <h2>Compiled Bytecode (Hex View)</h2>
+                        <span id="bytecode-size" class="status-badge">0 bytes</span>
+                    </div>
+                    <div class="bytecode-container" id="bytecode-view">
+                        <div class="empty-state">Assemble your program to view bytecode</div>
+                    </div>
+                </div>
+                <div class="sub-panel logs-panel">
+                    <div class="panel-header">
+                        <h2>Execution Console</h2>
+                        <button id="btn-clear-console" class="btn-text">Clear</button>
+                    </div>
+                    <div class="console-container" id="console-view">
+                        <div class="console-line system">CVM Web Visualizer Initialized. Select a template and click Assemble.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: VM Internals Visualizer -->
+            <section class="panel panel-internals">
+                <div class="panel-header">
+                    <h2>VM Internals</h2>
+                    <div class="run-status" id="vm-run-status">READY</div>
+                </div>
+
+                <!-- Step progress / Gas status -->
+                <div class="internals-card gas-card">
+                    <div class="card-header">
+                        <h3>Resource Usage</h3>
+                    </div>
+                    <div class="gas-stats">
+                        <div class="stat-row">
+                            <span>Steps Executed:</span>
+                            <strong id="stat-steps">0</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span>Gas Consumed:</span>
+                            <strong id="stat-gas">0</strong>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="gas-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- PC & Current Opcode -->
+                <div class="internals-card state-card">
+                    <div class="state-grid">
+                        <div class="state-item">
+                            <span class="label">Program Counter (PC)</span>
+                            <span class="value" id="val-pc">0x0000</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="label">Current Opcode</span>
+                            <span class="value opcode-highlight" id="val-opcode">None</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operand Stack -->
+                <div class="internals-card stack-card">
+                    <div class="card-header">
+                        <h3>Operand Stack</h3>
+                        <span id="stack-count" class="card-badge">0</span>
+                    </div>
+                    <div class="stack-list-wrapper">
+                        <div class="stack-list" id="stack-view">
+                            <div class="empty-state">Stack is empty</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registers R0-R7 -->
+                <div class="internals-card registers-card">
+                    <div class="card-header">
+                        <h3>Registers</h3>
+                    </div>
+                    <div class="registers-grid" id="registers-view">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Key Store -->
+                <div class="internals-card keystore-card">
+                    <div class="card-header">
+                        <h3>Secure KeyStore</h3>
+                        <span id="keystore-count" class="card-badge">0</span>
+                    </div>
+                    <div class="keystore-list" id="keystore-view">
+                        <div class="empty-state">No keys generated</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
