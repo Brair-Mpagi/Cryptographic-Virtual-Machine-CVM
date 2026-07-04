@@ -1,0 +1,9 @@
+[package]
+name = "cvm-disasm"
+version = "0.1.0"
+edition = "2021"
+description = "Disassembler: CVM bytecode (.cvmb) to human-readable assembly"
+
+[dependencies]
+cvm-core = { path = "../vm-core" }
+thiserror = { workspace = true }

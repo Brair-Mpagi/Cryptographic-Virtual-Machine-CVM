@@ -1,0 +1,52 @@
+; factorial.cvmasm — Compute factorial using CALL/RET
+; Demonstrates: subroutines, call stack, recursion-like pattern
+;
+; Uses iterative approach with CALL/RET:
+;   Main calls factorial subroutine
+;   R0 = input N
+;   R1 = accumulator (result)
+
+    ; Compute 7! = 5040
+    PUSH_INT 7
+    SETREG R0
+
+    ; Call factorial
+    CALL factorial
+
+    ; Print result (left on stack by factorial)
+    PRINT
+    HALT
+
+; Factorial subroutine
+; Input: R0 = N
+; Output: pushes N! onto stack
+factorial:
+    ; Initialize accumulator = 1
+    PUSH_INT 1
+    SETREG R1
+
+fact_loop:
+    ; If N <= 1, we're done
+    GETREG R0
+    PUSH_INT 1
+    GT
+    JZ fact_done
+
+    ; accumulator *= N
+    GETREG R1
+    GETREG R0
+    MUL
+    SETREG R1
+
+    ; N -= 1
+    GETREG R0
+    PUSH_INT 1
+    SUB
+    SETREG R0
+
+    JMP fact_loop
+
+fact_done:
+    ; Push result and return
+    GETREG R1
+    RET

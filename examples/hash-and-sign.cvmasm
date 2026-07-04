@@ -1,0 +1,46 @@
+; hash-and-sign.cvmasm — SHA256 hash then ECDSA sign and verify
+; Demonstrates: crypto opcodes, key generation, opaque key handles
+;
+; Flow:
+;   1. Generate ECDSA keypair (returns opaque KeyHandle)
+;   2. Push input data
+;   3. SHA256 hash the data
+;   4. Sign the hash with ECDSA
+;   5. Verify the signature
+;   6. Print verification result (should be "true")
+
+    ; Step 1: Generate ECDSA-P256 keypair
+    GEN_EC_KEY
+    SETREG R0       ; R0 = key handle
+
+    ; Step 2: Push data to hash
+    PUSH_BYTES "Hello, Cryptographic Virtual Machine!"
+
+    ; Step 3: SHA256 hash
+    SHA256
+    DUP             ; Keep a copy of the hash for verification
+    SETREG R1       ; R1 = hash (as bytes on reg)
+
+    ; Step 4: Sign the hash
+    ; Stack needs: key_handle, data -> signature
+    GETREG R0       ; Push key handle
+    SWAP            ; key_handle, hash -> hash, key_handle... wait
+    ; Actually ECDSA_SIGN expects: key_handle data → sig
+    ; So we need key_handle on stack first, then data
+    ; Let's redo:
+    POP             ; Remove hash from stack
+    GETREG R0       ; Push key handle
+    GETREG R1       ; Push hash
+    ECDSA_SIGN      ; Sign: key_handle data → signature
+    SETREG R2       ; R2 = signature
+
+    ; Step 5: Verify the signature
+    ; ECDSA_VERIFY expects: key_handle data sig → bool
+    GETREG R0       ; key handle
+    GETREG R1       ; hash (data)
+    GETREG R2       ; signature
+    ECDSA_VERIFY
+
+    ; Step 6: Print result (should be "true")
+    PRINT
+    HALT

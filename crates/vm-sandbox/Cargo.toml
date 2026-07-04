@@ -1,0 +1,9 @@
+[package]
+name = "cvm-sandbox"
+version = "0.1.0"
+edition = "2021"
+description = "Sandboxing layer: gas limits, instruction whitelisting, memory quotas"
+
+[dependencies]
+cvm-core = { path = "../vm-core" }
+thiserror = { workspace = true }

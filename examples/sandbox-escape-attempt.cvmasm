@@ -1,0 +1,25 @@
+; sandbox-escape-attempt.cvmasm — Adversarial test: infinite loop
+; Demonstrates: sandbox gas limit enforcement
+;
+; This program enters an infinite loop. When run with a gas limit,
+; the sandbox should terminate it with GasExhausted error.
+;
+; Usage: cvm run sandbox-escape-attempt.cvmb --gas-limit 1000
+;        Expected: "E07 GasExhausted" error
+
+    PUSH_INT 0
+    SETREG R0
+
+infinite:
+    ; Increment counter
+    GETREG R0
+    PUSH_INT 1
+    ADD
+    DUP
+    SETREG R0
+
+    ; Never exits — loops forever
+    JMP infinite
+
+    ; This HALT is unreachable
+    HALT

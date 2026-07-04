@@ -1,0 +1,18 @@
+[package]
+name = "cvm-cli"
+version = "0.1.0"
+edition = "2021"
+description = "CLI binary for the Cryptographic Virtual Machine"
+
+[[bin]]
+name = "cvm"
+path = "src/main.rs"
+
+[dependencies]
+cvm-core = { path = "../vm-core" }
+cvm-crypto = { path = "../vm-crypto" }
+cvm-asm = { path = "../vm-asm" }
+cvm-disasm = { path = "../vm-disasm" }
+cvm-sandbox = { path = "../vm-sandbox" }
+clap = { workspace = true }
+hex = { workspace = true }

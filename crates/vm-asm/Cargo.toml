@@ -1,0 +1,9 @@
+[package]
+name = "cvm-asm"
+version = "0.1.0"
+edition = "2021"
+description = "Assembler: CVM assembly (.cvmasm) to bytecode (.cvmb)"
+
+[dependencies]
+cvm-core = { path = "../vm-core" }
+thiserror = { workspace = true }

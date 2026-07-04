@@ -1,0 +1,8 @@
+[package]
+name = "cvm-core"
+version = "0.1.0"
+edition = "2021"
+description = "Core virtual machine: stack, registers, memory, fetch-decode-execute loop"
+
+[dependencies]
+thiserror = { workspace = true }

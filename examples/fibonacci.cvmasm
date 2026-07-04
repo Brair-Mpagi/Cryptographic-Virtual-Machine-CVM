@@ -1,0 +1,50 @@
+; fibonacci.cvmasm — Compute the Nth Fibonacci number
+; Demonstrates: loops, registers, arithmetic, stack operations
+;
+; Algorithm: iterative fibonacci
+;   R0 = N (how many iterations)
+;   R1 = fib(n-1)
+;   R2 = fib(n)
+
+    ; Set N = 10
+    PUSH_INT 10
+    SETREG R0
+
+    ; Initialize: fib(0) = 0, fib(1) = 1
+    PUSH_INT 0
+    SETREG R1
+    PUSH_INT 1
+    SETREG R2
+
+loop:
+    ; Check if N == 0
+    GETREG R0
+    PUSH_INT 0
+    EQ
+    JNZ done
+
+    ; temp = R2
+    GETREG R2
+
+    ; R2 = R1 + R2
+    GETREG R1
+    GETREG R2
+    ADD
+    SETREG R2
+
+    ; R1 = temp (old R2)
+    SETREG R1
+
+    ; N = N - 1
+    GETREG R0
+    PUSH_INT 1
+    SUB
+    SETREG R0
+
+    JMP loop
+
+done:
+    ; Print result
+    GETREG R2
+    PRINT
+    HALT
