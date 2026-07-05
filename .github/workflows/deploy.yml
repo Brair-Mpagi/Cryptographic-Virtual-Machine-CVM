@@ -23,23 +23,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        working-directory: ./visualizer
-        run: npm ci
-
-      - name: Build
-        working-directory: ./visualizer
-        run: npm run build
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./visualizer/dist
+          # Upload the entire repository containing the root index.html redirect and visualizer/ folder
+          path: '.'
 
   deploy:
     environment:
