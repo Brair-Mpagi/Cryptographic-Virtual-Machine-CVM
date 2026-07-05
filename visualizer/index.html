@@ -6,7 +6,7 @@
     <title>CVM — Cryptographic Virtual Machine IDE & Visualizer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,16 +14,21 @@
         <!-- Header -->
         <header class="app-header">
             <div class="logo-area">
-                <span class="badge">SECURE</span>
-                <h1>CVM <span>Cryptographic VM</span></h1>
+                <svg class="chip-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="9" y="9" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                    <rect x="13" y="13" width="8" height="8" rx="1" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M17 2v6M17 26v6M2 17h6M26 17h6M6.5 6.5l4 4M27.5 6.5l-4 4M6.5 27.5l4-4M27.5 27.5l-4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                <h1>CVM <span>Cryptographic Virtual Machine</span></h1>
+                <span class="badge">Sandboxed Runtime</span>
             </div>
             <div class="controls-area">
                 <div class="select-wrapper">
-                    <label for="template-select">Template</label>
+                    <label for="template-select">Program</label>
                     <select id="template-select">
                         <option value="fibonacci">Fibonacci Calculator</option>
                         <option value="factorial">Subroutine Factorial</option>
-                        <option value="crypto">Hash & Sign (SHA256 + ECDSA)</option>
+                        <option value="crypto">Hash &amp; Sign (SHA256 + ECDSA)</option>
                         <option value="sandbox">Sandbox Escape (Infinite Loop)</option>
                     </select>
                 </div>
@@ -32,7 +37,9 @@
                     <input type="number" id="gas-limit-input" value="1000" min="0">
                 </div>
                 <div class="btn-group">
-                    <button id="btn-assemble" class="btn btn-primary">Assemble</button>
+                    <button id="btn-assemble" class="btn btn-primary">
+                        <span class="btn-key">⌘⏎</span>Assemble
+                    </button>
                     <button id="btn-run" class="btn btn-success" disabled>Run</button>
                     <button id="btn-step" class="btn btn-warning" disabled>Step Into</button>
                     <button id="btn-reset" class="btn btn-danger">Reset</button>
@@ -40,10 +47,17 @@
             </div>
         </header>
 
+        <!-- Signal trace divider — signature element -->
+        <div class="signal-trace" aria-hidden="true">
+            <svg viewBox="0 0 1200 28" preserveAspectRatio="none">
+                <path d="M0,14 L120,14 L136,4 L152,24 L168,14 L300,14 L316,22 L332,6 L348,14 L520,14 L536,4 L552,24 L568,14 L760,14 L776,22 L792,6 L808,14 L1000,14 L1016,4 L1032,24 L1048,14 L1200,14" />
+            </svg>
+        </div>
+
         <!-- Main Workspace -->
         <main class="app-workspace">
             <!-- Left Panel: Assembly Code Editor -->
-            <section class="panel panel-editor">
+            <section class="panel panel-editor accent-violet">
                 <div class="panel-header">
                     <h2>Assembly Editor</h2>
                     <span class="file-name">program.cvmasm</span>
@@ -56,7 +70,7 @@
 
             <!-- Middle Panel: Bytecode & Output Console -->
             <section class="panel panel-console">
-                <div class="sub-panel bytecode-panel">
+                <div class="sub-panel bytecode-panel accent-signal">
                     <div class="panel-header">
                         <h2>Compiled Bytecode (Hex View)</h2>
                         <span id="bytecode-size" class="status-badge">0 bytes</span>
@@ -65,7 +79,7 @@
                         <div class="empty-state">Assemble your program to view bytecode</div>
                     </div>
                 </div>
-                <div class="sub-panel logs-panel">
+                <div class="sub-panel logs-panel accent-phosphor">
                     <div class="panel-header">
                         <h2>Execution Console</h2>
                         <button id="btn-clear-console" class="btn-text">Clear</button>
@@ -77,10 +91,24 @@
             </section>
 
             <!-- Right Panel: VM Internals Visualizer -->
-            <section class="panel panel-internals">
+            <section class="panel panel-internals accent-wire">
                 <div class="panel-header">
                     <h2>VM Internals</h2>
                     <div class="run-status" id="vm-run-status">READY</div>
+                </div>
+
+                <!-- PC & Current Opcode: digital readout -->
+                <div class="internals-card readout-card">
+                    <div class="readout-grid">
+                        <div class="readout-item">
+                            <span class="label">Program Counter</span>
+                            <span class="readout-value" id="val-pc">0x0000</span>
+                        </div>
+                        <div class="readout-item">
+                            <span class="label">Current Opcode</span>
+                            <span class="readout-value opcode-highlight" id="val-opcode">NONE</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Step progress / Gas status -->
@@ -90,30 +118,16 @@
                     </div>
                     <div class="gas-stats">
                         <div class="stat-row">
-                            <span>Steps Executed:</span>
+                            <span>Steps Executed</span>
                             <strong id="stat-steps">0</strong>
                         </div>
                         <div class="stat-row">
-                            <span>Gas Consumed:</span>
+                            <span>Gas Consumed</span>
                             <strong id="stat-gas">0</strong>
                         </div>
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar" id="gas-progress" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- PC & Current Opcode -->
-                <div class="internals-card state-card">
-                    <div class="state-grid">
-                        <div class="state-item">
-                            <span class="label">Program Counter (PC)</span>
-                            <span class="value" id="val-pc">0x0000</span>
-                        </div>
-                        <div class="state-item">
-                            <span class="label">Current Opcode</span>
-                            <span class="value opcode-highlight" id="val-opcode">None</span>
-                        </div>
                     </div>
                 </div>
 
